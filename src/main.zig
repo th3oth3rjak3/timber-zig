@@ -81,7 +81,7 @@ pub fn main() anyerror!void {
     defer flyingLogs.deinit(allocator);
 
     // Game Status
-    var gameActive = true;
+    var gameActive = false;
 
     // Game Loop
     while (!rl.windowShouldClose()) {
@@ -94,6 +94,20 @@ pub fn main() anyerror!void {
         }
 
         bee.update(rand, dt);
+
+        if (!gameActive) {
+            if (rl.isKeyPressed(rl.KeyboardKey.enter)) {
+                score.reset();
+                player.reset();
+                axe.reset();
+                timer.reset();
+                for (&branches) |*branch| {
+                    branch.reset(.none);
+                }
+
+                gameActive = true;
+            }
+        }
 
         if (gameActive) {
             timer.update(dt);

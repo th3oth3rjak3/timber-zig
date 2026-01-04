@@ -14,6 +14,6 @@
 ✔ Add the log to the game. @done(26-01-03 23:03)
 ✔ Add branches to the game. @done(26-01-04 13:54)
 ✔ Add game timer @done(26-01-04 15:22)
-☐ Add ability to start again by pressing enter.
-☐ Add game start, pause, out of time text
+✔ Add ability to start again by pressing enter. @done(26-01-04 15:54)
+☐ Add game start, player died, out of time text
 ☐ Add high score feature?

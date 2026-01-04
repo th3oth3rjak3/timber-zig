@@ -22,6 +22,10 @@ pub const Timer = struct {
         self.timeRemaining = @max(0, self.timeRemaining - deltaTime);
     }
 
+    pub fn reset(self: *Self) void {
+        self.timeRemaining = DEFAULT_TIME;
+    }
+
     pub fn addBonusTime(self: *Self, bonus: f32) void {
         self.timeRemaining = @min(DEFAULT_TIME, self.timeRemaining + bonus);
     }

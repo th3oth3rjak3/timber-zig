@@ -36,6 +36,10 @@ pub const Axe = struct {
         }
     }
 
+    pub fn reset(self: *Self) void {
+        self.update(.none);
+    }
+
     pub fn draw(self: *Self) void {
         if (self.side == .none) {
             return;

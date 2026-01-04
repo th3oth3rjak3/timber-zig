@@ -24,6 +24,10 @@ pub const Score = struct {
         self.score += 1;
     }
 
+    pub fn reset(self: *Self) void {
+        self.score = 0;
+    }
+
     pub fn draw(self: *Self) void {
         // Position on screen
         const pos = rl.Vector2{ .x = 20, .y = 20 };

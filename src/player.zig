@@ -23,6 +23,10 @@ pub const Player = struct {
         };
     }
 
+    pub fn reset(self: *Self) void {
+        self.update(.right);
+    }
+
     pub fn update(self: *Self, side: Side) void {
         switch (side) {
             .left => {
