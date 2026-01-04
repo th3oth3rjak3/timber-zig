@@ -5,6 +5,7 @@ const util = @import("utils.zig");
 const Cloud = @import("cloud.zig").Cloud;
 const Bee = @import("bee.zig").Bee;
 const Tree = @import("tree.zig").Tree;
+const BackgroundTree = @import("tree.zig").BackgroundTree;
 
 const SCREEN_WIDTH = 1920;
 const SCREEN_HEIGHT = 1080;
@@ -30,6 +31,11 @@ pub fn main() anyerror!void {
 
     var tree = Tree.init(assets.tree);
 
+    var backgroundTrees: [3]BackgroundTree = undefined;
+    backgroundTrees[0] = BackgroundTree.init(assets.treeAlt, 20, 0);
+    backgroundTrees[1] = BackgroundTree.init(assets.treeAlt, 1500, -40);
+    backgroundTrees[2] = BackgroundTree.init(assets.treeAlt, 1900, 0);
+
     var bee = Bee.init(assets.bee, rand);
 
     // Game Loop
@@ -53,6 +59,10 @@ pub fn main() anyerror!void {
         rl.drawTexture(assets.background, 0, 0, rl.Color.white);
         for (&clouds) |*cloud| {
             cloud.draw();
+        }
+
+        for (&backgroundTrees) |*backgroundTree| {
+            backgroundTree.draw();
         }
 
         tree.draw();

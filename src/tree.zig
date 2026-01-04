@@ -19,4 +19,22 @@ pub const Tree = struct {
     }
 };
 
-pub const BackgroundTree = struct {};
+pub const BackgroundTree = struct {
+    const Self = @This();
+
+    texture: rl.Texture,
+    x: i32,
+    y: i32,
+
+    pub fn init(texture: rl.Texture, x: i32, y: i32) Self {
+        return Self{
+            .texture = texture,
+            .x = x,
+            .y = y,
+        };
+    }
+
+    pub fn draw(self: *Self) void {
+        rl.drawTexture(self.texture, self.x, self.y, rl.Color.white);
+    }
+};
