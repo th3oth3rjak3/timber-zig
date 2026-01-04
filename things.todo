@@ -1,8 +1,15 @@
 ✔ Decide on a game library (probably raylib-zig) @done(26-01-03 16:41)
-☐ Add raylib to the build.zig file
-☐ Create a basic game loop
-☐ Copy assets into this project
-☐ Render the background image
-☐ Experiment with keypresses and sounds
-☐ Add the clouds with movement to the game
+✔ Add raylib to the build.zig file @done(26-01-03 16:42)
+✔ Create a basic game loop @done(26-01-03 16:42)
+✔ Copy assets into this project @done(26-01-03 16:43)
+✔ Render the background image @done(26-01-03 16:48)
+✔ Add the clouds with movement to the game @done(26-01-03 18:24)
 ☐ Add the bee to the game with movement.
+☐ Add the primary tree to the game.
+☐ Add the background trees to the game.
+☐ Add the log to the game.
+☐ Add the player to the game.
+☐ Add the axe to the game.
+☐ Experiment with keypresses and sounds
+☐ Add score handling after keypresses are figured out.
+☐ Add branches to the game.

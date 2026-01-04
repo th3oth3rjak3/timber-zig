@@ -1,33 +1,50 @@
 const std = @import("std");
 const rl = @import("raylib");
+const assets = @import("assets.zig");
+const util = @import("utils.zig");
+const cloud = @import("cloud.zig");
+
+const screenWidth = 1920;
+const screenHeight = 1080;
 
 pub fn main() anyerror!void {
-    // Initialization
-    //--------------------------------------------------------------------------------------
-    const screenWidth = 800;
-    const screenHeight = 450;
+    var prng = std.Random.DefaultPrng.init(@bitCast(std.time.timestamp()));
+    const rand = prng.random();
 
-    rl.initWindow(screenWidth, screenHeight, "raylib-zig [core] example - basic window");
-    defer rl.closeWindow(); // Close window and OpenGL context
+    rl.initWindow(screenWidth, screenHeight, "Timber!!");
+    defer rl.closeWindow();
+    rl.setTargetFPS(120);
 
-    rl.setTargetFPS(60); // Set our game to run at 60 frames-per-second
-    //--------------------------------------------------------------------------------------
+    rl.initAudioDevice();
+    defer rl.closeAudioDevice();
 
-    // Main game loop
-    while (!rl.windowShouldClose()) { // Detect window close button or ESC key
-        // Update
-        //----------------------------------------------------------------------------------
-        // TODO: Update your variables here
-        //----------------------------------------------------------------------------------
+    const gameAssets = try assets.GameAssets.load();
+    defer gameAssets.unload();
 
-        // Draw
-        //----------------------------------------------------------------------------------
+    var clouds: [3]cloud.Cloud = undefined;
+    for (&clouds) |*c| {
+        c.* = cloud.Cloud.init(gameAssets.cloud, rand);
+    }
+
+    // Game Loop
+    while (!rl.windowShouldClose()) {
+        // deltaTime
+        const dt = rl.getFrameTime();
+
+        // Update State
+        for (&clouds) |*c| {
+            c.update(rand, dt);
+        }
+
+        // Render
         rl.beginDrawing();
         defer rl.endDrawing();
 
         rl.clearBackground(.white);
 
-        rl.drawText("Congrats! You created your first window!", 190, 200, 20, .light_gray);
-        //----------------------------------------------------------------------------------
+        rl.drawTexture(gameAssets.background, 0, 0, rl.Color.white);
+        for (&clouds) |*c| {
+            c.draw();
+        }
     }
 }

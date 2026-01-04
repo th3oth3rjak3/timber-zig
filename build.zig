@@ -29,6 +29,28 @@ pub fn build(b: *std.Build) void {
 
     b.installArtifact(exe);
 
+    // Copy assets to the output directory
+    const install_assets = b.addInstallDirectory(.{
+        .source_dir = b.path("graphics"),
+        .install_dir = .bin,
+        .install_subdir = "graphics",
+    });
+    b.getInstallStep().dependOn(&install_assets.step);
+
+    const install_sounds = b.addInstallDirectory(.{
+        .source_dir = b.path("sounds"),
+        .install_dir = .bin,
+        .install_subdir = "sounds",
+    });
+    b.getInstallStep().dependOn(&install_sounds.step);
+
+    const install_fonts = b.addInstallDirectory(.{
+        .source_dir = b.path("fonts"),
+        .install_dir = .bin,
+        .install_subdir = "fonts",
+    });
+    b.getInstallStep().dependOn(&install_fonts.step);
+
     const run_step = b.step("run", "Run the app");
     const run_cmd = b.addRunArtifact(exe);
     run_step.dependOn(&run_cmd.step);
