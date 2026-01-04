@@ -7,6 +7,7 @@ const Axe = @import("axe.zig").Axe;
 const Background = @import("background.zig").Background;
 const BackgroundTree = @import("tree.zig").BackgroundTree;
 const Bee = @import("bee.zig").Bee;
+const Branch = @import("branch.zig").Branch;
 const Cloud = @import("cloud.zig").Cloud;
 const GameAssets = @import("assets.zig").GameAssets;
 const Log = @import("log.zig").Log;
@@ -25,6 +26,30 @@ var dba: std.heap.DebugAllocator(.{}) =
         .init
     else
         @compileError("Should not use debug allocator in release mode");
+
+fn updateBranches(branches: *[6]Branch, rand: std.Random) void {
+    var lastBranch = branches[5];
+
+    for (0..branches.len - 1) |i| {
+        const index = branches.len - 1 - i;
+        branches[index] = branches[index - 1];
+    }
+
+    const randInt = util.randomRange(u8, rand, 0, 6);
+    switch (randInt) {
+        0 => {
+            lastBranch.reset(.left);
+        },
+        1 => {
+            lastBranch.reset(.right);
+        },
+        else => {
+            lastBranch.reset(.none);
+        },
+    }
+
+    branches[0] = lastBranch;
+}
 
 pub fn main() anyerror!void {
     defer if (is_debug) {
@@ -60,6 +85,11 @@ pub fn main() anyerror!void {
     backgroundTrees[1] = BackgroundTree.init(&assets.treeAlt, 1500, -40);
     backgroundTrees[2] = BackgroundTree.init(&assets.treeAlt, 1900, 0);
 
+    var branches: [6]Branch = undefined;
+    for (&branches) |*branch| {
+        branch.* = Branch.init(&assets.branch);
+    }
+
     var background = Background.init(&assets.background);
     var tree = Tree.init(&assets.tree);
     var player = Player.init(&assets.player);
@@ -70,6 +100,9 @@ pub fn main() anyerror!void {
     // Log storage
     var flyingLogs = std.ArrayList(Log).empty;
     defer flyingLogs.deinit(allocator);
+
+    // Game Status
+    var gameActive = true;
 
     // Game Loop
     while (!rl.windowShouldClose()) {
@@ -83,30 +116,40 @@ pub fn main() anyerror!void {
 
         bee.update(rand, dt);
 
-        if (rl.isKeyPressed(rl.KeyboardKey.left)) {
-            rl.playSound(assets.chop);
-            score.increment();
-            player.update(.left);
-            axe.update(.left);
-            const newLog = try flyingLogs.addOne(allocator);
-            newLog.* = Log.init(&assets.log, .left);
-        }
+        if (gameActive) {
+            if (rl.isKeyPressed(rl.KeyboardKey.left)) {
+                rl.playSound(assets.chop);
+                score.increment();
+                player.update(.left);
+                axe.update(.left);
+                const newLog = try flyingLogs.addOne(allocator);
+                newLog.* = Log.init(&assets.log, .left);
+                updateBranches(&branches, rand);
+            }
 
-        if (rl.isKeyPressed(rl.KeyboardKey.right)) {
-            rl.playSound(assets.chop);
-            score.increment();
-            player.update(.right);
-            axe.update(.right);
-            const newLog = try flyingLogs.addOne(allocator);
-            newLog.* = Log.init(&assets.log, .right);
-        }
+            if (rl.isKeyPressed(rl.KeyboardKey.right)) {
+                rl.playSound(assets.chop);
+                score.increment();
+                player.update(.right);
+                axe.update(.right);
+                const newLog = try flyingLogs.addOne(allocator);
+                newLog.* = Log.init(&assets.log, .right);
+                updateBranches(&branches, rand);
+            }
 
-        if (rl.isKeyReleased(rl.KeyboardKey.right)) {
-            axe.update(.none);
-        }
+            if (rl.isKeyReleased(rl.KeyboardKey.right)) {
+                axe.update(.none);
+            }
 
-        if (rl.isKeyReleased(rl.KeyboardKey.left)) {
-            axe.update(.none);
+            if (rl.isKeyReleased(rl.KeyboardKey.left)) {
+                axe.update(.none);
+            }
+
+            // Check for player death
+            if (branches[5].side == player.side) {
+                gameActive = false;
+                rl.playSound(assets.death);
+            }
         }
 
         // Despawn offscreened logs
@@ -136,6 +179,10 @@ pub fn main() anyerror!void {
 
         for (flyingLogs.items) |*log| {
             log.draw();
+        }
+
+        for (&branches, 0..) |*branch, i| {
+            branch.draw(i);
         }
 
         tree.draw();

@@ -25,7 +25,7 @@ pub const GameAssets = struct {
     font: rl.Font,
 
     pub fn load() !GameAssets {
-        return GameAssets{
+        const assets = GameAssets{
             .axe = try rl.loadTexture("graphics/axe.png"),
             .background = try rl.loadTexture("graphics/background.png"),
             .bee = try rl.loadTexture("graphics/bee.png"),
@@ -41,6 +41,12 @@ pub const GameAssets = struct {
             .chop = try rl.loadSound("sounds/chop.wav"),
             .font = try rl.loadFont("fonts/KOMIKAP_.ttf"),
         };
+
+        rl.setSoundVolume(assets.death, 0.4);
+        rl.setSoundVolume(assets.chop, 1.0);
+        rl.setSoundVolume(assets.outOfTime, 0.7);
+
+        return assets;
     }
 
     pub fn unload(self: Self) void {
