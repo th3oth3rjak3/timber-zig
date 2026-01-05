@@ -12,6 +12,7 @@ const Branch = @import("branch.zig").Branch;
 const Cloud = @import("cloud.zig").Cloud;
 const GameAssets = @import("assets.zig").GameAssets;
 const Log = @import("log.zig").Log;
+const Message = @import("message.zig").Message;
 const Player = @import("player.zig").Player;
 const Score = @import("score.zig").Score;
 const Timer = @import("timer.zig").Timer;
@@ -75,6 +76,8 @@ pub fn main() anyerror!void {
     var bee = Bee.init(&assets.bee, rand);
     var score = Score.init(&assets.font);
     var timer = Timer.init();
+    var message = Message.init(&assets.font);
+    message.show("Press Enter to start!");
 
     // Log storage
     var flyingLogs = std.ArrayList(Log).empty;
@@ -106,6 +109,7 @@ pub fn main() anyerror!void {
                 }
 
                 gameActive = true;
+                message.hide();
             }
         }
 
@@ -146,12 +150,14 @@ pub fn main() anyerror!void {
             if (branches[5].side == player.side) {
                 gameActive = false;
                 rl.playSound(assets.death);
+                message.show("Squished! Press Enter to start over.");
             }
 
             // Check for out of time condition.
             if (timer.timeRemaining == 0) {
                 gameActive = false;
                 rl.playSound(assets.outOfTime);
+                message.show("Out of time! Press Enter to start over.");
             }
         }
 
@@ -194,5 +200,6 @@ pub fn main() anyerror!void {
         bee.draw();
         score.draw();
         timer.draw();
+        message.draw();
     }
 }
